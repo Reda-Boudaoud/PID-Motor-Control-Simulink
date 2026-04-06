@@ -2,32 +2,47 @@
 Simulation and tuning of a PID controller for a DC Motor.
 # DC Motor Speed Control via PID (Simulink)
 
-My Journey with PID: Controlling a DC Motor in Simulink
-Hey there! This project is a big step in my mechatronics and control systems learning journey. I wanted to move beyond just reading about PIDs and actually see one in action, even if it's just in simulation for now. This repo holds my Simulink model and the results of my (sometimes frustrating!) tuning process.
+## My Learning Journey
+This project is a big step in my mechatronics and control systems learning. I wanted to move beyond just reading about PIDs and actually *see* one in action. This repo holds my **Simulink model** and the results of my tuning process.
 
+### The Setup
+I modeled the motor using a second-order transfer function to understand how inertia and friction affect behavior:
+$$G(s) = \frac{1}{s^2+10s+20}$$
 
-The "Aha!" Moments (and the "Oh No" Moments)
-It wasn't all smooth sailing. My first few attempts were... let's just say, educational.
+![System Block Diagram](The%20PID.png)
 
-The "Where's the Motor?" Phase: Initially, I couldn't see any motor response! I realized I hadn't given the simulation enough time to run and the step input was starting too late. Lesson learned: always check your simulation parameters!
+---
 
-The Noise Nightmare: I added some "Band-Limited White Noise" to make it more realistic, but I turned it up way too high. The motor's actual movement was buried under all that digital static. Finding the right balance for noise was a great lesson in real-world signal challenges.
+## 💡 The "Aha!" Moments (and "Oh No" Moments)
 
-Hitting the Ceiling: I also ran into "Saturation" issues where my controller was trying to give the motor more power than I'd allowed. It showed me why understanding the physical limits of your hardware is so important.
+It wasn't all smooth sailing. My first few attempts were... educational:
 
-Tuning the "Brain" (The PID Part)
-The core of the project was learning how the P, I, and D terms actually feel when you change them. I tried three main approaches:
+* **The "Where's the Motor?" Phase:** Initially, I couldn't see any response! I realized I hadn't given the simulation enough time to run. **Lesson:** Always check your simulation time scales.
+* **The Noise Nightmare:** I added white noise to make it realistic, but turned it up too high. Finding the right balance for noise was a great lesson in real-world signal challenges.
+* **Hitting the Ceiling:** I ran into **Saturation** issues. It showed me why understanding the physical limits of hardware (like voltage caps) is critical.
 
-Playing it Safe (Overdamped - P=2, I=1, D=0): This was my first "working" attempt. It was super stable, but man, was it slow. It eventually got close to the target, but it took its sweet time. Great for safety, maybe not so much for a fast-moving robot arm.
+---
 
-Going Too Fast (Underdamped - P=100, I=200, D=0): I got aggressive here. The motor shot up to the target speed really fast, but then it couldn't stop! It overshot and wobbled (oscillated) for a while before settling. Definitely learned what instability looks like firsthand.
+## 🛠️ The Results: Tuning the "Brain"
 
-The "Just Right" Spot (Critically Damped - P=30, I=40, D=2): This was the most satisfying part. By carefully balancing the Proportional and Integral gains and adding just a bit of Derivative "braking," I got a response that's both fast and steady. Seeing that smooth curve hit the target perfectly was a real "yes!" moment.
+I analyzed three main scenarios to see how the **P, I, and D** terms actually "feel":
 
-What's Inside
-The PID.slx: My Simulink model. Feel free to open it up and play with the values yourself!
+### 1. The "Just Right" Spot (Critically Damped)
+**Parameters:** P=30, I=40, D=2
+This was the most satisfying part. I got a response that's both fast and steady with **zero overshoot**.
+![Critically Damped Graph](30,40,2.png)
 
-Results/: A folder with screenshots of the scope for each of my tuning attempts. They really tell the story of the process.
+### 2. Playing it Safe (Overdamped)
+**Parameters:** P=2, I=1, D=0
+It was stable, but way too slow for a real robot.
+![Overdamped Graph](2,1,0.png)
 
-Moving Forward
-This project taught me so much more than just clicking blocks in Simulink. I've got a much better intuitive feel for how PID controllers work and the kinds of real-world messiness (like noise and limits) you have to deal with. Next up, I'm hoping to try this out on some actual hardware
+### 3. Going Too Fast (Underdamped)
+**Parameters:** P=100, I=200, D=0
+The motor shot up fast but couldn't stop! It overshot and wobbled. 
+![Underdamped Graph](100,200,0.png)
+
+---
+
+## 🚀 Moving Forward
+This project taught me the intuitive feel for PID controllers. My next goal is to move from simulation to **real hardware** using an Arduino or STM32 to implement this logic in C++.
